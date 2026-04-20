@@ -178,8 +178,6 @@ module CSVImportable
   def rows_are_valid
     rows.each(&:validate)
 
-    check_rows_are_unique
-
     row_offset = csv_data_object.has_instruction_row? ? 3 : 2
 
     rows.each.with_index do |row, index|

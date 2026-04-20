@@ -98,9 +98,6 @@ class ImmunisationImport < ApplicationRecord
 
   private
 
-  def check_rows_are_unique
-  end
-
   def ensure_attributes_are_unique
     row_offset = csv_data_object.has_instruction_row? ? 3 : 2
 

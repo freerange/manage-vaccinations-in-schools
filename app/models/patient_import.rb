@@ -185,9 +185,6 @@ class PatientImport < ApplicationRecord
     end
   end
 
-  def check_rows_are_unique
-  end
-
   def ensure_rows_are_unique_by_nhs_number
     rows
       .map(&:nhs_number_value)
