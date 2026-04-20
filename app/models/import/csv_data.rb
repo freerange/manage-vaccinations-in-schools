@@ -43,6 +43,8 @@ class Import::CSVData
     found_values = false
 
     # map(&:itself) because CSV::Table doesn't have a reverse method
+    # TODO: Does CSV.parse(skip_blanks: true) already remove the blank lines?
+    #       If not, can we just ignore them at the point of processing each row (e.g. in `#records`)?
     rows_in_reverse_order = csv_table.map(&:itself).reverse
 
     filtered_rows =
