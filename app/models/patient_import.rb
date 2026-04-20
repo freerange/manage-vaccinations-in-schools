@@ -183,24 +183,6 @@ class PatientImport < ApplicationRecord
     end
   end
 
-  def ensure_rows_are_unique_by_nhs_number
-    rows
-      .map(&:nhs_number_value)
-      .tally
-      .each do |nhs_number, count|
-        next if nhs_number.nil? || count <= 1
-
-        rows
-          .select { _1.nhs_number_value == nhs_number }
-          .each do |row|
-            row.errors.add(
-              :base,
-              "The same NHS number appears multiple times in this file."
-            )
-          end
-      end
-  end
-
   def valid_pds_match_rate?
     pds_match_rate / 100 >= PDS_MATCH_THRESHOLD
   end
