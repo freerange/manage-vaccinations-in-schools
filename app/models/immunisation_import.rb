@@ -44,6 +44,8 @@ class ImmunisationImport < ApplicationRecord
   has_and_belongs_to_many :sessions
   has_and_belongs_to_many :vaccination_records
 
+  validate :ensure_attributes_are_unique, if: -> { rows.present? }
+
   def type_label
     "Vaccination records"
   end
@@ -96,8 +98,10 @@ class ImmunisationImport < ApplicationRecord
 
   private
 
-  # TODO: This is called by the `rows_are_valid` validation. Move it to it's own validation.
   def check_rows_are_unique
+  end
+
+  def ensure_attributes_are_unique
     row_offset = csv_data_object.has_instruction_row? ? 3 : 2
 
     rows
