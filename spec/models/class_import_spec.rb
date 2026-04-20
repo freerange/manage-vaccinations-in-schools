@@ -131,6 +131,23 @@ describe ClassImport do
         expect(class_import.errors.to_a[0]).to start_with("Row 2")
       end
     end
+
+    describe 'with duplicate nhs numbers' do
+      let(:file) { "duplicate_nhs_numbers.csv" }
+
+      it 'should have 2 rows' do
+        expect(class_import.rows.count).to eq(2)
+      end
+
+      it 'should not be valid' do
+        expect(class_import).not_to be_valid
+      end
+
+      it 'includes the duplicate nhs error number on both rows' do
+        expect(class_import.rows.first.errors.first.type).to match(/The same NHS number appears multiple times in this file/)
+        expect(class_import.rows.last.errors.first.type).to match(/The same NHS number appears multiple times in this file/)
+      end
+    end
   end
 
   describe "#process!" do
