@@ -44,8 +44,6 @@ class ImmunisationImport < ApplicationRecord
   has_and_belongs_to_many :sessions
   has_and_belongs_to_many :vaccination_records
 
-  validate :ensure_attributes_are_unique, if: -> { rows.present? }
-
   def type_label
     "Vaccination records"
   end

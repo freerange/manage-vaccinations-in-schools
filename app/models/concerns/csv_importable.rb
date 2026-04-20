@@ -82,6 +82,9 @@ module CSVImportable
              unless: -> { csv_removed? || csv_data_object.empty? }
     validate :rows_are_valid, if: -> { !csv_removed? && rows }
 
+    validate :ensure_attributes_are_unique, if: -> { is_a?(ImmunisationImport) && rows.present? }
+    validate :ensure_rows_are_unique_by_nhs_number, if: -> { is_a?(PatientImport) && rows.present? }
+
     before_save :ensure_processed_with_count_statistics
   end
 

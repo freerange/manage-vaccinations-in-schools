@@ -10,8 +10,6 @@ class PatientImport < ApplicationRecord
 
   has_many :patient_changesets
 
-  validate :ensure_rows_are_unique_by_nhs_number, if: -> { rows.present? }
-
   def count_column(patient, parents, parent_relationships)
     if patient.new_record? || parents.any?(&:new_record?) ||
          parent_relationships.any?(&:new_record?)
