@@ -75,11 +75,14 @@ module CSVImportable
               }
     validates :csv_filename, presence: true
 
-    validate :csv_is_valid, unless: -> { csv_removed? }
+    validate :csv_is_valid, unless: -> { csv_removed? },
+             on: :create
     validate :csv_has_records,
-             if: -> { !csv_removed? && csv_data_object.well_formed? }
+             if: -> { !csv_removed? && csv_data_object.well_formed? },
+             on: :create
     validate :csv_is_not_too_large,
-             unless: -> { csv_removed? || csv_data_object.empty? }
+             unless: -> { csv_removed? || csv_data_object.empty? },
+             on: :create
     validate :rows_are_valid, if: -> { !csv_removed? && rows }
 
     validates_with Import::RowsUniqueAcrossAllImmunisationAttributesValidator, if: -> { is_a?(ImmunisationImport) && !csv_removed? && rows }
