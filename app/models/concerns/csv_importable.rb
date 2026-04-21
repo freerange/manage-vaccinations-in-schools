@@ -83,11 +83,10 @@ module CSVImportable
     validate :csv_is_not_too_large,
              unless: -> { csv_removed? || csv_data_object.empty? },
              on: :create
-    validate :rows_are_valid, if: -> { !csv_removed? && rows }
 
+    validate :rows_are_valid, if: -> { !csv_removed? && rows }
     validates_with Import::RowsUniqueAcrossAllImmunisationAttributesValidator, if: -> { is_a?(ImmunisationImport) && !csv_removed? && rows }
     validates_with Import::RowsUniqueByNHSNumber, if: -> { is_a?(PatientImport) && !csv_removed? && rows }
-
     after_validation :aggregate_row_level_errors, if: -> { !csv_removed? && rows }
 
     before_save :ensure_processed_with_count_statistics
