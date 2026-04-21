@@ -85,6 +85,8 @@ module CSVImportable
     validates_with Import::RowsUniqueAcrossAllImmunisationAttributesValidator, if: -> { is_a?(ImmunisationImport) && !csv_removed? && rows }
     validates_with Import::RowsUniqueByNHSNumber, if: -> { is_a?(PatientImport) && !csv_removed? && rows }
 
+    after_validation :aggregate_row_level_errors, if: -> { !csv_removed? && rows }
+
     before_save :ensure_processed_with_count_statistics
   end
 
@@ -180,26 +182,6 @@ module CSVImportable
 
   def rows_are_valid
     rows.each(&:validate)
-
-    row_offset = csv_data_object.has_instruction_row? ? 3 : 2
-
-    rows.each.with_index do |row, index|
-      next if row.errors.empty?
-
-      # The first row is the header and the index is 0-based, so we add two
-      # to match what the user sees in the spreadsheet
-
-      formatted_errors =
-        row.errors.map do |error|
-          if error.attribute == :base
-            error.message
-          else
-            "<code>#{error.attribute}</code>: #{error.message}"
-          end
-        end
-
-      errors.add("row_#{index + row_offset}".to_sym, formatted_errors)
-    end
   end
 
   def count_columns
@@ -242,5 +224,27 @@ module CSVImportable
       records.map(&:id).product([id]).uniq,
       on_duplicate_key_ignore: true
     )
+  end
+
+  def aggregate_row_level_errors
+    row_offset = csv_data_object.has_instruction_row? ? 3 : 2
+
+    rows.each.with_index do |row, index|
+      next if row.errors.empty?
+
+      # The first row is the header and the index is 0-based, so we add two
+      # to match what the user sees in the spreadsheet
+
+      formatted_errors =
+        row.errors.map do |error|
+          if error.attribute == :base
+            error.message
+          else
+            "<code>#{error.attribute}</code>: #{error.message}"
+          end
+        end
+
+      errors.add("row_#{index + row_offset}".to_sym, formatted_errors)
+    end
   end
 end

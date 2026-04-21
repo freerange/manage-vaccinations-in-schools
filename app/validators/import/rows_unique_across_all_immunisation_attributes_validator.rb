@@ -4,7 +4,6 @@ module Import
   class RowsUniqueAcrossAllImmunisationAttributesValidator < ActiveModel::Validator
     def validate(record)
       check_rows(record)
-      add_row_errors_to_record(record)
     end
 
     private
@@ -41,28 +40,6 @@ module Import
             )
           end
         end
-    end
-
-    def add_row_errors_to_record(record)
-      row_offset = record.csv_data_object.has_instruction_row? ? 3 : 2
-
-      record.rows.each.with_index do |row, index|
-        next if row.errors.empty?
-
-        # The first row is the header and the index is 0-based, so we add two
-        # to match what the user sees in the spreadsheet
-
-        formatted_errors =
-          row.errors.map do |error|
-            if error.attribute == :base
-              error.message
-            else
-              "<code>#{error.attribute}</code>: #{error.message}"
-            end
-          end
-
-        record.errors.add("row_#{index + row_offset}".to_sym, formatted_errors)
-      end
     end
   end
 end
